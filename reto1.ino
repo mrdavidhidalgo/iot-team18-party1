@@ -7,7 +7,7 @@
 
 #define dht_dpin 4
 DHT dht(dht_dpin, DHTTYPE);
-
+#define R 10000 //ohm resistance value
 #include "secrets.h"
 
 //Conexión a Wifi
@@ -181,7 +181,7 @@ void loop()
   //El mensaje que se envía es de la forma {"value": x}, donde x es el valor de temperatura o humedad
 
   int sensorValue = analogRead(A0);   // read the input on analog pin 0
-	float intencidad = sensorValue * (1.0 / 1023.0);   // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 3.3V)
+  float intencidad = sensorawLumen(sensorValue); 
 
   //JSON para humedad
   String json = "{\"value\": "+ String(h) + "}";
@@ -220,4 +220,12 @@ void loop()
   Serial.println(payload3);
   /*Espera 5 segundos antes de volver a ejecutar la función loop*/
   delay(5000);
+}
+
+int sensorawLumen(int raw){
+
+  float scale = float(raw)  / float(1024);// Conversion analog to 0-1
+  float RLDR = (R * (1 - scale)); // Conversion voltage to resistance
+  int lumen=500/(RLDR/1000); // Conversion resitance to lumen
+  return lumen;
 }
